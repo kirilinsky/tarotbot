@@ -15,7 +15,7 @@ export async function getOrCreateUser(telegramUser: {
     .eq("telegram_id", telegramId)
     .single();
 
-  if (fetchError) {
+  if (fetchError && fetchError.code !== "PGRST116") {
     console.error("Ошибка при получении пользователя:", fetchError);
   }
 
@@ -35,16 +35,25 @@ export async function getOrCreateUser(telegramUser: {
     return { user: existingUser, isNew: false };
   }
 
-  const newUser = {
-    telegram_id: telegramId,
-    username: telegramUser.username ?? null,
-    first_name: telegramUser.first_name ?? null,
-    language: telegramUser.language_code ?? "en",
-    created_at: now,
-    last_seen: now,
-    total_free_readings: 0,
-    total_paid_readings: 0,
-  };
+  const { data: insertedUser, error: insertError } = await supabase
+    .from("users")
+    .insert({
+      telegram_id: telegramId,
+      username: telegramUser.username ?? null,
+      first_name: telegramUser.first_name ?? null,
+      language: telegramUser.language_code ?? "en",
+      created_at: now,
+      last_seen: now,
+      total_free_readings: 0,
+      total_paid_readings: 0,
+    })
+    .select()
+    .single();
 
-  return { user: newUser, isNew: true };
+  if (insertError) {
+    console.error("Ошибка при создании нового пользователя:", insertError);
+    throw insertError;
+  }
+
+  return { user: insertedUser, isNew: true };
 }
