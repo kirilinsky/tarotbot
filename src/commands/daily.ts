@@ -25,7 +25,7 @@ bot.command("daily", async (ctx) => {
     type: "free",
     theme: "daily",
     cards: [{ id: cardResult.cardId, position: cardResult.position }],
-    summary: cardResult.text,
+    summary: cardResult.summary,
     paid: false,
   });
 

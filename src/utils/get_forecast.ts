@@ -20,7 +20,6 @@ export function getNarrativeForecast(user: UserType) {
   const ageMeaning = card.ageSpecificMeanings[user.age_group];
   const genderHint = getRandomItem(card.genderHints[user.gender] ?? []);
   const seasonLine = card.seasonalHint[season];
-
   const focusHint = getRandomItem(
     cardExtras?.focusHints?.[user.focus_area!] ?? []
   );
@@ -64,11 +63,14 @@ ${ageMeaning} ${genderHint}
 Хочешь узнать больше? Попробуй полноценный расклад — и ты увидишь, как всё связано.
 `.trim();
 
+  const summary = `${card.name}: ${side.meaning}. Совет: ${side.advice}. В отношениях: ${side.love}. Работа: ${side.career}. Осторожно: ${side.warning}.`;
+
   return {
     cardId: card.id,
     name: card.name,
     position,
     season,
     text: story,
+    summary,
   };
 }
