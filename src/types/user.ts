@@ -24,7 +24,13 @@ export type UserType = {
     | "health"
     | "other";
 
-  life_phase?: "searching" | "crisis" | "stable" | "transition" | "in_love";
+  life_phase?:
+    | "searching"
+    | "crisis"
+    | "stable"
+    | "transition"
+    | "in_love"
+    | "uncertain";
   last_purchase_at?: string;
   total_free_readings: number;
   total_paid_readings: number;

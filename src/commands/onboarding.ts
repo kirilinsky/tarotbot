@@ -58,7 +58,6 @@ bot.hears(Object.keys(AGE_GROUPS), async (ctx) => {
   });
 });
 
-// 🎯 Фокус
 const FOCUS_AREAS: Record<string, string> = {
   Любовь: "love",
   Работа: "career",
@@ -84,6 +83,7 @@ bot.hears(Object.keys(FOCUS_AREAS), async (ctx) => {
         [{ text: "В поиске себя" }, { text: "Переживаю трудности" }],
         [{ text: "Всё стабильно" }, { text: "Готов(а) к переменам" }],
         [{ text: "Влюблён(а)" }],
+        [{ text: "Неопределённость" }],
       ],
       resize_keyboard: true,
       one_time_keyboard: true,
@@ -91,13 +91,13 @@ bot.hears(Object.keys(FOCUS_AREAS), async (ctx) => {
   });
 });
 
-// 🌱 Этап жизни
 const LIFE_PHASES: Record<string, string> = {
   "В поиске себя": "searching",
   "Переживаю трудности": "crisis",
   "Всё стабильно": "stable",
   "Готов(а) к переменам": "transition",
   "Влюблён(а)": "in_love",
+  Неопределённость: "uncertain",
 };
 
 bot.hears(Object.keys(LIFE_PHASES), async (ctx) => {

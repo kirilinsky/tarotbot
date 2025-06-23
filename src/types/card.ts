@@ -18,6 +18,7 @@ export type FocusArea =
   | "other";
 export type LifePhase =
   | "searching"
+  | "uncertain"
   | "crisis"
   | "stable"
   | "transition"
