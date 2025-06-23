@@ -1,5 +1,5 @@
 import { bot } from "../bot";
-import { getRandomCardForUser } from "../utils/cards";
+import { getRandomCardForUser } from "../utils/get_daily_random";
 import { supabase } from "../supabase";
 
 bot.command("daily", async (ctx) => {

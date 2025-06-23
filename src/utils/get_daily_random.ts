@@ -1,10 +1,12 @@
 import { UserType } from "../types/user";
-import cards from "../cards/data.json";
+import rawCards from "../cards/data.json";
+import { CardType } from "../types/card";
 
 type Position = "upright" | "reversed";
 
 export function getRandomCardForUser(user: UserType) {
-  const card = cards[Math.floor(Math.random() * cards.length)];
+  const cards = rawCards as CardType[];
+  const card: CardType = cards[Math.floor(Math.random() * cards.length)];
   const position: Position = Math.random() > 0.5 ? "upright" : "reversed";
 
   const side = card[position];
@@ -27,6 +29,11 @@ export function getRandomCardForUser(user: UserType) {
 
 🎯 Возраст: ${card.ageSpecificMeanings[user.ageGroup]}
 🌈 Для тебя: ${card.genderHints[user.gender]}
+
+---
+
+📌 ${card.dailyHook.teaser}
+✨ ${card.dailyHook.fullPromise}
 `.trim();
 
   return {
