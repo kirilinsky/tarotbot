@@ -27,7 +27,7 @@ export function getRandomCardForUser(user: UserType) {
 🧠 Настроение: ${side.emotionalTone}
 🪞 Афирмация: _${side.affirmations[0]}_
 
-🎯 Возраст: ${card.ageSpecificMeanings[user.ageGroup]}
+🎯 Возраст: ${card.ageSpecificMeanings[user.age_group]}
 🌈 Для тебя: ${card.genderHints[user.gender]}
 
 ---

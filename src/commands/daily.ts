@@ -38,6 +38,7 @@ bot.command("daily", async (ctx) => {
         cards: [{ id: cardResult.cardId, position: cardResult.position }],
         summary: cardResult.text,
       },
+      total_free_readings: (user.total_free_readings || 0) + 1,
     })
     .eq("telegram_id", telegramId);
 });
