@@ -26,12 +26,23 @@ bot.command("daily", async (ctx) => {
 
   if (alreadyToday) {
     return ctx.reply(
-      "Ты уже получал(а) карту сегодня 🌞 Попробуй снова завтра!"
+      "Ты уже получал(а) карту сегодня 🌞 Попробуй снова завтра!",
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "🔮 Купить полный расклад",
+                callback_data: "buy_full_reading",
+              },
+            ],
+          ],
+        },
+      }
     );
   }
 
   const cardResult = getNarrativeForecast(user);
-
   await ctx.reply(cardResult.text, { parse_mode: "Markdown" });
 
   const timestamp = new Date().toISOString();
@@ -58,4 +69,16 @@ bot.command("daily", async (ctx) => {
       total_free_readings: (user.total_free_readings || 0) + 1,
     })
     .eq("telegram_id", telegramId);
+});
+
+bot.on("callback_query", async (ctx) => {
+  if ("data" in ctx.callbackQuery) {
+    const data = ctx.callbackQuery.data;
+    if (data === "buy_full_reading") {
+      await ctx.answerCbQuery();
+      await ctx.reply(
+        "✨ Эта функция в разработке. Совсем скоро ты сможешь узнать всё!"
+      );
+    }
+  }
 });
