@@ -1,6 +1,6 @@
 import { bot } from "../bot";
-import { getRandomCardForUser } from "../utils/get_daily_random";
 import { supabase } from "../supabase";
+import { getNarrativeForecast } from "../utils/get_forecast";
 
 bot.command("daily", async (ctx) => {
   const telegramId = ctx.from.id.toString();
@@ -15,7 +15,7 @@ bot.command("daily", async (ctx) => {
     return ctx.reply("Сначала нужно пройти /start и настроить профиль 🧙");
   }
 
-  const cardResult = getRandomCardForUser(user);
+  const cardResult = getNarrativeForecast(user);
 
   await ctx.reply(cardResult.text, { parse_mode: "Markdown" });
 
