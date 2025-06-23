@@ -8,13 +8,13 @@ export async function getOrCreateUser(telegramUser: {
 }) {
   const telegramId = telegramUser.id.toString();
 
-  const { data: existingUser, error } = await supabase
+  const now = new Date().toISOString();
+
+  const { data: existingUser } = await supabase
     .from("users")
     .select("*")
     .eq("telegram_id", telegramId)
     .single();
-
-  const now = new Date().toISOString();
 
   if (existingUser) {
     await supabase
@@ -22,10 +22,10 @@ export async function getOrCreateUser(telegramUser: {
       .update({ last_seen: now })
       .eq("telegram_id", telegramId);
 
-    return existingUser;
+    return { user: existingUser, isNew: false };
   }
 
-  const { data: newUser, error: insertError } = await supabase
+  const { data: newUser, error } = await supabase
     .from("users")
     .insert({
       telegram_id: telegramId,
@@ -40,10 +40,5 @@ export async function getOrCreateUser(telegramUser: {
     .select()
     .single();
 
-  if (insertError) {
-    console.error("Error [CREATE USER]:", insertError);
-    return null;
-  }
-
-  return newUser;
+  return { user: newUser, isNew: true };
 }
