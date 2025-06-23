@@ -1,6 +1,6 @@
 import { bot } from "./bot";
 import "./commands/start";
-import "./scenes/onboarding";
+import "./commands/onboarding";
 
 
 
