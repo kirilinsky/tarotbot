@@ -1,6 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
+import { cleanEnv } from "./utils/cleanEnv";
 
 export const supabase = createClient(
-  process.env.SUPABASE_PROJECT_URL!,
-  process.env.SUPABASE_ANON_PUBLIC_KEY!
+  cleanEnv(process.env.SUPABASE_PROJECT_URL!),
+  cleanEnv(process.env.SUPABASE_ANON_PUBLIC_KEY!)
 );
