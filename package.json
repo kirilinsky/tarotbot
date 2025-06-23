@@ -1,0 +1,24 @@
+{
+  "name": "tarotbot",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/kirilinsky/tarotbot#readme",
+  "bugs": {
+    "url": "https://github.com/kirilinsky/tarotbot/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kirilinsky/tarotbot.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {}
+}
