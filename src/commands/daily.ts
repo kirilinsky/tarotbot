@@ -1,6 +1,7 @@
 import { bot } from "../bot";
 import { supabase } from "../supabase";
 import { getNarrativeForecast } from "../utils/get_forecast";
+import { isSameDay } from "date-fns";
 
 bot.command("daily", async (ctx) => {
   const telegramId = ctx.from.id.toString();
@@ -11,17 +12,33 @@ bot.command("daily", async (ctx) => {
     .eq("telegram_id", telegramId)
     .single();
 
-  if (!user || !user.gender || !user.age_group) {
+  if (error || !user) {
+    console.error("Ошибка при получении пользователя:", error);
+    return ctx.reply("Произошла ошибка при получении профиля.");
+  }
+
+  if (!user.gender || !user.age_group) {
     return ctx.reply("Сначала нужно пройти /start и настроить профиль 🧙");
+  }
+
+  const lastDate = user.last_card_pull?.date;
+  const alreadyToday = lastDate && isSameDay(new Date(lastDate), new Date());
+
+  if (alreadyToday) {
+    return ctx.reply(
+      "Ты уже получал(а) карту сегодня 🌞 Попробуй снова завтра!"
+    );
   }
 
   const cardResult = getNarrativeForecast(user);
 
   await ctx.reply(cardResult.text, { parse_mode: "Markdown" });
 
+  const timestamp = new Date().toISOString();
+
   await supabase.from("readings").insert({
     user_id: telegramId,
-    timestamp: new Date().toISOString(),
+    timestamp,
     type: "free",
     theme: "daily",
     cards: [{ id: cardResult.cardId, position: cardResult.position }],
@@ -33,10 +50,10 @@ bot.command("daily", async (ctx) => {
     .from("users")
     .update({
       last_card_pull: {
-        date: new Date().toISOString(),
+        date: timestamp,
         type: "free",
         cards: [{ id: cardResult.cardId, position: cardResult.position }],
-        summary: cardResult.text,
+        summary: cardResult.summary,
       },
       total_free_readings: (user.total_free_readings || 0) + 1,
     })
