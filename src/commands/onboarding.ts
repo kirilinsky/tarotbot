@@ -4,7 +4,6 @@ import { supabase } from "../supabase";
 const GENDERS: Record<string, string> = {
   Мужской: "male",
   Женский: "female",
-  Другой: "other",
 };
 
 bot.hears(Object.keys(GENDERS), async (ctx) => {
@@ -26,6 +25,7 @@ bot.hears(Object.keys(GENDERS), async (ctx) => {
   });
 });
 
+// 🎂 Возраст
 const AGE_GROUPS: Record<string, string> = {
   "до 18": "under_18",
   "18–25": "18_25",
@@ -44,7 +44,75 @@ bot.hears(Object.keys(AGE_GROUPS), async (ctx) => {
     .update({ age_group: ageGroup })
     .eq("telegram_id", telegramId);
 
-  await ctx.reply(`Спасибо! Ты готов к своему первому раскладу 🃏`, {
-    reply_markup: { remove_keyboard: true },
+  await ctx.reply(`Что для тебя сейчас важнее всего?`, {
+    reply_markup: {
+      keyboard: [
+        [{ text: "Любовь" }, { text: "Работа" }],
+        [{ text: "Саморазвитие" }, { text: "Финансы" }],
+        [{ text: "Семья" }, { text: "Здоровье" }],
+        [{ text: "Другое" }],
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
   });
+});
+
+// 🎯 Фокус
+const FOCUS_AREAS: Record<string, string> = {
+  Любовь: "love",
+  Работа: "career",
+  Саморазвитие: "self",
+  Финансы: "money",
+  Семья: "family",
+  Здоровье: "health",
+  Другое: "other",
+};
+
+bot.hears(Object.keys(FOCUS_AREAS), async (ctx) => {
+  const focusArea = FOCUS_AREAS[ctx.message.text];
+  const telegramId = ctx.from.id.toString();
+
+  await supabase
+    .from("users")
+    .update({ focus_area: focusArea })
+    .eq("telegram_id", telegramId);
+
+  await ctx.reply("Как ты чувствуешь себя сейчас, в каком ты этапе жизни?", {
+    reply_markup: {
+      keyboard: [
+        [{ text: "В поиске себя" }, { text: "Переживаю трудности" }],
+        [{ text: "Всё стабильно" }, { text: "Готов(а) к переменам" }],
+        [{ text: "Влюблён(а)" }],
+      ],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  });
+});
+
+// 🌱 Этап жизни
+const LIFE_PHASES: Record<string, string> = {
+  "В поиске себя": "searching",
+  "Переживаю трудности": "crisis",
+  "Всё стабильно": "stable",
+  "Готов(а) к переменам": "transition",
+  "Влюблён(а)": "in_love",
+};
+
+bot.hears(Object.keys(LIFE_PHASES), async (ctx) => {
+  const lifePhase = LIFE_PHASES[ctx.message.text];
+  const telegramId = ctx.from.id.toString();
+
+  await supabase
+    .from("users")
+    .update({ life_phase: lifePhase })
+    .eq("telegram_id", telegramId);
+
+  await ctx.reply(
+    "Спасибо! Ты полностью настроен(а). Напиши /daily, чтобы получить карту дня 🃏",
+    {
+      reply_markup: { remove_keyboard: true },
+    }
+  );
 });
