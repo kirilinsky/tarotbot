@@ -9,7 +9,6 @@ import { CardAdditional, CardAdditionals } from "../types/additional";
 
 export function getNarrativeForecast(user: UserType) {
   const cards = rawCards as CardType[];
-
   const card = cards[Math.floor(Math.random() * cards.length)];
   const cardExtras: CardAdditional = (additional as CardAdditionals)[card.id];
 
@@ -34,29 +33,36 @@ export function getNarrativeForecast(user: UserType) {
   const dailyPromise = getRandomItem(
     cardExtras?.dailyHook?.fullPromise?.[user.gender]?.[user.age_group] ?? []
   );
-
   const emotionalTone = side.emotionalTone[timeOfDay];
   const affirmation = getRandomItem(side.affirmations?.[user.gender] ?? []);
 
   const story = `
-🃏 Сегодня тебе выпала карта *${card.name}* — ${
-    position === "upright" ? "в прямом" : "в перевёрнутом"
-  } положении. Это знак, что ${side.meaning.toLowerCase()}.
+🃏 *Сегодняшняя карта: ${card.name}*  
+${
+  position === "upright" ? "Прямое" : "Перевёрнутое"
+} положение — это знак: _${side.meaning.toLowerCase()}_
 
-${seasonLine} ${lifePhaseHint} ${focusHint}
+🌿 *Контекст*: ${seasonLine}  
+🔍 *Жизненный этап*: ${lifePhaseHint}  
+🎯 *Текущий фокус*: ${focusHint}
 
-Сейчас не время игнорировать внутренний голос: ${side.advice.toLowerCase()}
+💬 *Совет*: ${side.advice}  
+❤️ *Отношения*: ${side.love}  
+💼 *Работа*: ${side.career}  
+⚠️ *Осторожно*: ${side.warning}
 
-В отношениях — ${side.love.toLowerCase()}. В работе — ${side.career.toLowerCase()}. Но будь осторожен(на): ${side.warning.toLowerCase()}.
-
-Ты можешь чувствовать ${emotionalTone.toLowerCase()} — это нормально. 
-Напомни себе: _${affirmation}_
+🌀 *Сейчас ты можешь ощущать*: _${emotionalTone}_  
+🪞 *Аффирмация дня*: _${affirmation}_
 
 ${ageMeaning} ${genderHint}
 
-📌 ${dailyTeaser}
-✨ ${dailyPromise}
-  `.trim();
+🎁 *Подсказка дня*: ${dailyTeaser}  
+✨ *Обещание карты*: ${dailyPromise}
+
+— — —  
+🔮 *Иногда одного взгляда недостаточно...*  
+Хочешь узнать больше? Попробуй полноценный расклад — и ты увидишь, как всё связано.
+`.trim();
 
   return {
     cardId: card.id,
