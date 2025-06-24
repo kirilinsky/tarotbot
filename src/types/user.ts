@@ -1,8 +1,11 @@
+export type RelationshipStatus = "single" | "in_relationship";
+
 export type UserType = {
   telegramId: string;
   username?: string;
   firstName?: string;
   language: string;
+  relationship_status?: RelationshipStatus;
 
   age_group: "under_18" | "18_25" | "26_35" | "36_45" | "46_60" | "60_plus";
   gender: "male" | "female";

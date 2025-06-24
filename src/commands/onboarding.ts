@@ -12,7 +12,7 @@ bot.hears(Object.keys(GENDERS), async (ctx) => {
 
   await supabase.from("users").update({ gender }).eq("telegram_id", telegramId);
 
-  await ctx.reply(`Теперь выбери возрастную группу:`, {
+  await ctx.reply(`🎂 Теперь выбери возрастную группу:`, {
     reply_markup: {
       keyboard: [
         [{ text: "до 18" }, { text: "18–25" }],
@@ -25,7 +25,6 @@ bot.hears(Object.keys(GENDERS), async (ctx) => {
   });
 });
 
-// 🎂 Возраст
 const AGE_GROUPS: Record<string, string> = {
   "до 18": "under_18",
   "18–25": "18_25",
@@ -44,7 +43,7 @@ bot.hears(Object.keys(AGE_GROUPS), async (ctx) => {
     .update({ age_group: ageGroup })
     .eq("telegram_id", telegramId);
 
-  await ctx.reply(`Что для тебя сейчас важнее всего?`, {
+  await ctx.reply(`🎯 Что для тебя сейчас важнее всего?`, {
     reply_markup: {
       keyboard: [
         [{ text: "Любовь" }, { text: "Работа" }],
@@ -77,7 +76,7 @@ bot.hears(Object.keys(FOCUS_AREAS), async (ctx) => {
     .update({ focus_area: focusArea })
     .eq("telegram_id", telegramId);
 
-  await ctx.reply("Как ты чувствуешь себя сейчас, в каком ты этапе жизни?", {
+  await ctx.reply("🌱 Как ты чувствуешь себя сейчас, в каком ты этапе жизни?", {
     reply_markup: {
       keyboard: [
         [{ text: "В поиске себя" }, { text: "Переживаю трудности" }],
@@ -109,8 +108,31 @@ bot.hears(Object.keys(LIFE_PHASES), async (ctx) => {
     .update({ life_phase: lifePhase })
     .eq("telegram_id", telegramId);
 
+  await ctx.reply("💞 Ты сейчас сингл или в отношениях?", {
+    reply_markup: {
+      keyboard: [[{ text: "Сингл" }, { text: "В отношениях" }]],
+      resize_keyboard: true,
+      one_time_keyboard: true,
+    },
+  });
+});
+
+const RELATIONSHIP_STATUSES: Record<string, string> = {
+  Сингл: "single",
+  "В отношениях": "in_relationship",
+};
+
+bot.hears(Object.keys(RELATIONSHIP_STATUSES), async (ctx) => {
+  const relationshipStatus = RELATIONSHIP_STATUSES[ctx.message.text];
+  const telegramId = ctx.from.id.toString();
+
+  await supabase
+    .from("users")
+    .update({ relationship_status: relationshipStatus })
+    .eq("telegram_id", telegramId);
+
   await ctx.reply(
-    "Спасибо! Ты полностью настроен(а). Напиши /daily, чтобы получить карту дня 🃏",
+    "Спасибо! ✨ Ты полностью настроен(а). Напиши /daily, чтобы получить карту дня 🃏",
     {
       reply_markup: { remove_keyboard: true },
     }
