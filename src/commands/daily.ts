@@ -12,12 +12,12 @@ bot.command("daily", async (ctx) => {
     .eq("telegram_id", telegramId)
     .single();
 
-  if (error || !user) {
+  if (error) {
     console.error("Ошибка при получении пользователя:", error);
     return ctx.reply("Произошла ошибка при получении профиля.");
   }
 
-  if (!user.gender || !user.age_group) {
+  if (!user.gender || !user.age_group || !user) {
     return ctx.reply("Сначала нужно пройти /start и настроить профиль 🧙");
   }
 
