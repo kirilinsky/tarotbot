@@ -34,6 +34,7 @@ export function getNarrativeForecast(user: UserType) {
   );
   const emotionalTone = side.emotionalTone[timeOfDay];
   const affirmation = getRandomItem(side.affirmations?.[user.gender] ?? []);
+  const user_relationship = user.relationship_status;
 
   const story = `
 🃏 *Сегодняшняя карта: ${card.name}*  
@@ -46,7 +47,7 @@ ${
 🎯 *Текущий фокус*: ${focusHint}
 
 💬 *Совет*: ${side.advice}  
-❤️ *Отношения*: ${side.love}  
+❤️ *Отношения*: ${side.love[user_relationship!]}  
 💼 *Работа*: ${side.career}  
 ⚠️ *Осторожно*: ${side.warning}
 

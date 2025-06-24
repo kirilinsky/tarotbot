@@ -1,3 +1,5 @@
+import { RelationshipStatus } from "./user";
+
 export type CardPosition = "upright" | "reversed";
 export type CardSeason = "spring" | "summer" | "autumn" | "winter";
 export type Gender = "male" | "female";
@@ -36,7 +38,10 @@ export type CardSide = {
   meaning: string;
   advice: string;
   emotionalTone: CardEmotionalTone;
-  love: string;
+  love: {
+    single: string;
+    in_relationship: string;
+  };
   career: string;
   warning: string;
   affirmations: {
