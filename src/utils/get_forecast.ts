@@ -21,35 +21,43 @@ export function getNarrativeForecast(user: UserType) {
   const genderHint = getRandomItem(card.genderHints[user.gender] ?? []);
   const seasonLine = card.seasonalHint[season];
   const focusHint = getRandomItem(
-    cardExtras?.focusHints?.[user.focus_area!] ?? []
+    cardExtras?.focusHints?.[user.focus_area!] ?? [],
   );
   const lifePhaseHint = getRandomItem(
-    cardExtras?.lifePhaseHints?.[user.life_phase!] ?? []
+    cardExtras?.lifePhaseHints?.[user.life_phase!] ?? [],
   );
   const dailyTeaser = getRandomItem(
-    cardExtras?.dailyHook?.teaser?.[user.gender]?.[user.age_group] ?? []
+    cardExtras?.dailyHook?.teaser?.[user.gender]?.[user.age_group] ?? [],
   );
   const dailyPromise = getRandomItem(
-    cardExtras?.dailyHook?.fullPromise?.[user.gender]?.[user.age_group] ?? []
+    cardExtras?.dailyHook?.fullPromise?.[user.gender]?.[user.age_group] ?? [],
   );
   const emotionalTone = side.emotionalTone[timeOfDay];
   const affirmation = getRandomItem(side.affirmations?.[user.gender] ?? []);
-  // "complicated" фолбэк на "in_relationship" пока в данных карт нет третьего варианта
-  const user_relationship =
-    user.relationship_status === "complicated" ? "in_relationship" : user.relationship_status;
+  const COMPLICATED_LOVE = [
+    "Там, где всё запутано, карта видит скрытое притяжение — но и скрытое напряжение. Честность с собой сейчас важнее, чем ответы.",
+    "Неопределённость в отношениях — это тоже сигнал. Карта говорит: не торопись с выводами, но и не закрывай глаза.",
+    "Когда всё сложно — это значит, что что-то важное ещё не сказано. Дай себе пространство, чтобы услышать себя.",
+    "Сложные отношения часто учат больше, чем простые. Карта подсказывает: ищи урок, а не виноватого.",
+  ];
+
+  const loveText =
+    user.relationship_status === "complicated"
+      ? getRandomItem(COMPLICATED_LOVE)
+      : side.love[user.relationship_status!];
 
   const story = `
-🃏 *Сегодняшняя карта: ${card.name}*  
+🃏 *Сегодняшняя карта: ${card.name}*
 ${
   position === "upright" ? "Прямое" : "Перевёрнутое"
 } положение — это знак: _${side.meaning.toLowerCase()}_
 
-🌿 *Контекст*: ${seasonLine}  
-🔍 *Жизненный этап*: ${lifePhaseHint}  
+🌿 *Контекст*: ${seasonLine}
+🔍 *Жизненный этап*: ${lifePhaseHint}
 🎯 *Текущий фокус*: ${focusHint}
 
-💬 *Совет*: ${side.advice}  
-❤️ *Отношения*: ${side.love[user_relationship!]}  
+💬 *Совет*: ${side.advice}
+❤️ *Отношения*: ${loveText}  
 💼 *Работа*: ${side.career}  
 ⚠️ *Осторожно*: ${side.warning}
 
