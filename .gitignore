@@ -41,3 +41,6 @@ locked
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local planning docs
+PLAN.md
