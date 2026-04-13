@@ -1,10 +1,14 @@
 import postgres from "postgres";
-import { cleanEnv } from "./utils/cleanEnv";
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-export const sql = postgres(cleanEnv(process.env.DATABASE_PUBLIC_URL!), {
+const rawUrl = process.env.DATABASE_URL ?? "";
+const dbUrl = rawUrl.includes("${{")
+  ? process.env.DATABASE_PUBLIC_URL!
+  : rawUrl;
+
+export const sql = postgres(dbUrl, {
   ssl: "require",
 });
