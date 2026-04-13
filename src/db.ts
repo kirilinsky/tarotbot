@@ -10,5 +10,5 @@ const dbUrl =
     : process.env.DATABASE_PUBLIC_URL!;
 
 export const sql = postgres(dbUrl, {
-  ssl: "require",
+  ssl: dbUrl.includes("railway.internal") ? false : "require",
 });
