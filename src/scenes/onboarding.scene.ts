@@ -218,8 +218,15 @@ export const onboardingWizard = new Scenes.WizardScene<BotContext>(
     `;
 
     await ctx.reply(
-      "✨ Готово! Профиль настроен.\n\nНапиши /daily, чтобы получить карту дня 🃏",
+      "✨ Готово! Профиль настроен.",
       Markup.removeKeyboard(),
+    );
+    await ctx.reply(
+      "Что делаем?",
+      Markup.inlineKeyboard([
+        [Markup.button.callback("🃏 Карта дня", "daily")],
+        [Markup.button.callback("✨ Полный расклад", "buy_full_reading")],
+      ]),
     );
 
     return ctx.scene.leave();
