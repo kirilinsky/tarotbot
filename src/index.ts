@@ -1,6 +1,5 @@
 import { bot } from "./bot";
 import "./commands/start";
-import "./commands/onboarding";
 import "./commands/daily";
 
 console.log("✅ BOT_TOKEN loaded, starting bot...");

@@ -34,6 +34,7 @@ export type UserType = {
     | "transition"
     | "in_love"
     | "uncertain";
+  zodiac_sign?: string;
   last_purchase_at?: string;
   total_free_readings: number;
   total_paid_readings: number;

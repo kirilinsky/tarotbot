@@ -4,20 +4,11 @@ import { getOrCreateUser } from "../utils/users";
 bot.start(async (ctx) => {
   const { user, isNew } = await getOrCreateUser(ctx.from);
 
-  if (isNew || !user.gender || !user.age_group) {
-    await ctx.reply(
-      `Привет! Давай настроим твой профиль 💫\n\nВыбери свой пол:`,
-      {
-        reply_markup: {
-          keyboard: [[{ text: "Мужской" }, { text: "Женский" }]],
-          resize_keyboard: true,
-          one_time_keyboard: true,
-        },
-      }
-    );
+  if (isNew || !user.gender || !user.age_group || !user.zodiac_sign) {
+    await ctx.scene.enter("onboarding_gender");
   } else {
     await ctx.reply(
-      `Привет, ${user.first_name || "друг"}! 🔮 Готов к новому раскладу? `
+      `Привет, ${user.first_name || "друг"}! 🔮 Готов к новому раскладу?`
     );
   }
 });
