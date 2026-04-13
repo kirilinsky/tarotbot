@@ -34,7 +34,9 @@ export function getNarrativeForecast(user: UserType) {
   );
   const emotionalTone = side.emotionalTone[timeOfDay];
   const affirmation = getRandomItem(side.affirmations?.[user.gender] ?? []);
-  const user_relationship = user.relationship_status;
+  // "complicated" фолбэк на "in_relationship" пока в данных карт нет третьего варианта
+  const user_relationship =
+    user.relationship_status === "complicated" ? "in_relationship" : user.relationship_status;
 
   const story = `
 🃏 *Сегодняшняя карта: ${card.name}*  

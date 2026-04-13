@@ -1,7 +1,7 @@
 import { Telegraf, session, Scenes } from "telegraf";
 import { BotContext } from "./types/session";
 import { cleanEnv } from "./utils/cleanEnv";
-import { onboardingScenes } from "./scenes/onboarding.scene";
+import { onboardingWizard } from "./scenes/onboarding.scene";
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -14,7 +14,7 @@ if (!process.env.BOT_TOKEN) {
 
 export const bot = new Telegraf<BotContext>(cleanEnv(process.env.BOT_TOKEN!));
 
-const stage = new Scenes.Stage<BotContext>(onboardingScenes);
+const stage = new Scenes.Stage<BotContext>([onboardingWizard]);
 
 bot.use(session());
 bot.use(stage.middleware());

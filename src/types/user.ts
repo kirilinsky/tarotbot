@@ -1,4 +1,4 @@
-export type RelationshipStatus = "single" | "in_relationship";
+export type RelationshipStatus = "single" | "in_relationship" | "complicated";
 
 export type UserType = {
   telegram_id: string;
