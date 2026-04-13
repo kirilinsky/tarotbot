@@ -1,23 +1,19 @@
 import { bot } from "../bot";
-import { supabase } from "../supabase";
+import { sql } from "../db";
 import { getNarrativeForecast } from "../utils/get_forecast";
+import { UserType } from "../types/user";
 import { isSameDay } from "date-fns";
 
 bot.command("daily", async (ctx) => {
   const telegramId = ctx.from.id.toString();
 
-  const { data: user, error } = await supabase
-    .from("users")
-    .select("*")
-    .eq("telegram_id", telegramId)
-    .single();
+  const [user] = await sql<UserType[]>`SELECT * FROM users WHERE telegram_id = ${telegramId}`;
 
-  if (error) {
-    console.error("Ошибка при получении пользователя:", error);
+  if (!user) {
     return ctx.reply("Произошла ошибка при получении профиля.");
   }
 
-  if (!user.gender || !user.age_group || !user) {
+  if (!user.gender || !user.age_group) {
     return ctx.reply("Сначала нужно пройти /start и настроить профиль 🧙");
   }
 
@@ -46,29 +42,25 @@ bot.command("daily", async (ctx) => {
   await ctx.reply(cardResult.text, { parse_mode: "Markdown" });
 
   const timestamp = new Date().toISOString();
-
-  await supabase.from("readings").insert({
-    user_id: telegramId,
-    timestamp,
+  const cards = [{ id: cardResult.cardId, position: cardResult.position }];
+  const lastCardPull = {
+    date: timestamp,
     type: "free",
-    theme: "daily",
-    cards: [{ id: cardResult.cardId, position: cardResult.position }],
+    cards,
     summary: cardResult.summary,
-    paid: false,
-  });
+  };
 
-  await supabase
-    .from("users")
-    .update({
-      last_card_pull: {
-        date: timestamp,
-        type: "free",
-        cards: [{ id: cardResult.cardId, position: cardResult.position }],
-        summary: cardResult.summary,
-      },
-      total_free_readings: (user.total_free_readings || 0) + 1,
-    })
-    .eq("telegram_id", telegramId);
+  await sql`
+    INSERT INTO readings (user_id, timestamp, type, theme, cards, summary, paid)
+    VALUES (${telegramId}, ${timestamp}, 'free', 'daily', ${sql.json(cards)}, ${cardResult.summary}, false)
+  `;
+
+  await sql`
+    UPDATE users SET
+      last_card_pull = ${sql.json(lastCardPull)},
+      total_free_readings = ${(user.total_free_readings || 0) + 1}
+    WHERE telegram_id = ${telegramId}
+  `;
 });
 
 bot.on("callback_query", async (ctx) => {

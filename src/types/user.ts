@@ -1,9 +1,9 @@
 export type RelationshipStatus = "single" | "in_relationship";
 
 export type UserType = {
-  telegramId: string;
+  telegram_id: string;
   username?: string;
-  firstName?: string;
+  first_name?: string;
   language: string;
   relationship_status?: RelationshipStatus;
 

@@ -1,5 +1,5 @@
 import { bot } from "../bot";
-import { supabase } from "../supabase";
+import { sql } from "../db";
 
 const GENDERS: Record<string, string> = {
   Мужской: "male",
@@ -10,7 +10,7 @@ bot.hears(Object.keys(GENDERS), async (ctx) => {
   const gender = GENDERS[ctx.message.text];
   const telegramId = ctx.from.id.toString();
 
-  await supabase.from("users").update({ gender }).eq("telegram_id", telegramId);
+  await sql`UPDATE users SET gender = ${gender} WHERE telegram_id = ${telegramId}`;
 
   await ctx.reply(`🎂 Теперь выбери возрастную группу:`, {
     reply_markup: {
@@ -38,10 +38,7 @@ bot.hears(Object.keys(AGE_GROUPS), async (ctx) => {
   const ageGroup = AGE_GROUPS[ctx.message.text];
   const telegramId = ctx.from.id.toString();
 
-  await supabase
-    .from("users")
-    .update({ age_group: ageGroup })
-    .eq("telegram_id", telegramId);
+  await sql`UPDATE users SET age_group = ${ageGroup} WHERE telegram_id = ${telegramId}`;
 
   await ctx.reply(`🎯 Что для тебя сейчас важнее всего?`, {
     reply_markup: {
@@ -71,10 +68,7 @@ bot.hears(Object.keys(FOCUS_AREAS), async (ctx) => {
   const focusArea = FOCUS_AREAS[ctx.message.text];
   const telegramId = ctx.from.id.toString();
 
-  await supabase
-    .from("users")
-    .update({ focus_area: focusArea })
-    .eq("telegram_id", telegramId);
+  await sql`UPDATE users SET focus_area = ${focusArea} WHERE telegram_id = ${telegramId}`;
 
   await ctx.reply("🌱 Как ты чувствуешь себя сейчас, в каком ты этапе жизни?", {
     reply_markup: {
@@ -103,10 +97,7 @@ bot.hears(Object.keys(LIFE_PHASES), async (ctx) => {
   const lifePhase = LIFE_PHASES[ctx.message.text];
   const telegramId = ctx.from.id.toString();
 
-  await supabase
-    .from("users")
-    .update({ life_phase: lifePhase })
-    .eq("telegram_id", telegramId);
+  await sql`UPDATE users SET life_phase = ${lifePhase} WHERE telegram_id = ${telegramId}`;
 
   await ctx.reply("💞 Ты сейчас сингл или в отношениях?", {
     reply_markup: {
@@ -126,10 +117,7 @@ bot.hears(Object.keys(RELATIONSHIP_STATUSES), async (ctx) => {
   const relationshipStatus = RELATIONSHIP_STATUSES[ctx.message.text];
   const telegramId = ctx.from.id.toString();
 
-  await supabase
-    .from("users")
-    .update({ relationship_status: relationshipStatus })
-    .eq("telegram_id", telegramId);
+  await sql`UPDATE users SET relationship_status = ${relationshipStatus} WHERE telegram_id = ${telegramId}`;
 
   await ctx.reply(
     "Спасибо! ✨ Ты полностью настроен(а). Напиши /daily, чтобы получить карту дня 🃏",
