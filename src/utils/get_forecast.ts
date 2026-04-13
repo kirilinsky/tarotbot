@@ -1,4 +1,5 @@
 import rawCards from "../cards/data.json";
+import { additional } from "../cards/additional";
 import { CardPosition, CardSeason, CardType, ZodiacSign } from "../types/card";
 import { getTimeOfDay } from "./get_daytime";
 import { getRandomItem } from "./get_random_item";
@@ -54,15 +55,31 @@ export function getNarrativeForecast(user: UserType) {
   const timeOfDay = getTimeOfDay();
   const side = card[position];
 
-  const metaphor = getRandomItem(card.metaphors ?? []);
   const trigger = getRandomItem(card.psychological_triggers ?? []);
   const zodiacHint = user.zodiac_sign
     ? card.zodiacHints?.[user.zodiac_sign as ZodiacSign]
     : null;
+
+  const cardAdditional = additional[card.id as keyof typeof additional];
+
+  const teaser = cardAdditional
+    ? getRandomItem(cardAdditional.dailyHook.teaser[user.gender][user.age_group])
+    : getRandomItem(card.metaphors ?? []);
+
+  const lifePhaseHint = cardAdditional && user.life_phase
+    ? getRandomItem(cardAdditional.lifePhaseHints[user.life_phase])
+    : null;
   const lifePhaseCtx = LIFE_PHASE_CONTEXT[user.life_phase!] ?? "в этот момент";
+
+  const focusHint = cardAdditional && user.focus_area
+    ? getRandomItem(cardAdditional.focusHints[user.focus_area])
+    : null;
   const cliffhanger = getRandomItem(
     FOCUS_CLIFFHANGER[user.focus_area ?? "other"],
   );
+
+  const ageMeaning = card.ageSpecificMeanings?.[user.age_group] ?? null;
+  const genderHint = getRandomItem(card.genderHints?.[user.gender] ?? []);
 
   const atmosphere =
     timeOfDay === "morning" || timeOfDay === "day"
@@ -79,22 +96,28 @@ export function getNarrativeForecast(user: UserType) {
   const positionLabel =
     position === "upright" ? "прямое положение" : "перевёрнутое положение";
 
-   const mainPara = zodiacHint
-    ? `${lifePhaseCtx.charAt(0).toUpperCase() + lifePhaseCtx.slice(1)} — ${meaningClean.charAt(0).toLowerCase() + meaningClean.slice(1)}. ${zodiacHint}.`
-    : `${lifePhaseCtx.charAt(0).toUpperCase() + lifePhaseCtx.slice(1)} — ${meaningClean.charAt(0).toLowerCase() + meaningClean.slice(1)}.`;
+  const lifePhaseOpener = lifePhaseHint
+    ? lifePhaseHint
+    : `${lifePhaseCtx.charAt(0).toUpperCase() + lifePhaseCtx.slice(1)} — ${meaningClean.charAt(0).toLowerCase() + meaningClean.slice(1)}`;
+
+  const mainPara = zodiacHint
+    ? `${lifePhaseOpener}. ${zodiacHint}.`
+    : `${lifePhaseOpener}.`;
+
+  const extraLine = [ageMeaning, genderHint].filter(Boolean).join(" ");
 
   const story = `
 🃏 *${card.name}* — ${positionLabel}
 
-_${metaphor}_
+_${teaser}_
 
 ${mainPara}
-
+${extraLine ? `\n${extraLine}\n` : ""}
 *${atmosphere}*
 
 — — —
 _${trigger}_ — именно это стоит за этой картой сейчас.
-
+${focusHint ? `\n${focusHint}\n` : ""}
 ${cliffhanger}
 🔮 *Хочешь знать больше?* Полный расклад — для тех, кто готов увидеть картину целиком.
 `.trim();
