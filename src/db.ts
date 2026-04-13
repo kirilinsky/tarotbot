@@ -4,10 +4,7 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-const dbUrl =
-  process.env.NODE_ENV === "production"
-    ? process.env.DATABASE_URL!
-    : process.env.DATABASE_PUBLIC_URL!;
+const dbUrl = process.env.DATABASE_PUBLIC_URL ?? process.env.DATABASE_URL!;
 
 export const sql = postgres(dbUrl, {
   ssl: dbUrl.includes("railway.internal") ? false : "require",
