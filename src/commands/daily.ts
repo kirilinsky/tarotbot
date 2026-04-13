@@ -19,7 +19,7 @@ export async function sendDailyReading(ctx: Context, telegramId: string) {
   const lastDate = user.last_card_pull?.date;
   const alreadyToday = lastDate && isSameDay(new Date(lastDate), new Date());
 
-  if (!alreadyToday) {
+  if (alreadyToday) {
     return ctx.reply(
       "Ты уже получал(а) карту сегодня 🌞 Попробуй снова завтра!",
       {
