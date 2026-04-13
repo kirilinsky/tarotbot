@@ -33,6 +33,10 @@ export type CardEmotionalTone = {
   night: string;
 };
 
+export type ZodiacSign =
+  | "aries" | "taurus" | "gemini" | "cancer" | "leo" | "virgo"
+  | "libra" | "scorpio" | "sagittarius" | "capricorn" | "aquarius" | "pisces";
+
 export type CardSide = {
   keywords: string[];
   meaning: string;
@@ -41,6 +45,7 @@ export type CardSide = {
   love: {
     single: string;
     in_relationship: string;
+    complicated: string;
   };
   career: string;
   warning: string;
@@ -68,4 +73,5 @@ export type CardType = {
   ageSpecificMeanings: Record<AgeGroup, string>;
   genderHints: Record<Gender, string[]>;
   seasonalHint: Record<CardSeason, string>;
+  zodiacHints: Record<ZodiacSign, string>;
 };
