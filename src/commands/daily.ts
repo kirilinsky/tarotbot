@@ -4,6 +4,7 @@ import { getNarrativeForecast } from "../utils/get_forecast";
 import { UserType } from "../types/user";
 import { isSameDay } from "date-fns";
 import { Context } from "telegraf";
+import { message } from "telegraf/filters";
 import { withRetry } from "../utils/db-retry";
 
 export async function sendDailyReading(ctx: Context, telegramId: string) {
@@ -32,6 +33,7 @@ export async function sendDailyReading(ctx: Context, telegramId: string) {
     return ctx.reply(`Ты уже ${got} карту сегодня 🌞 Попробуй снова завтра!`, {
       reply_markup: {
         inline_keyboard: [
+          [{ text: "🎲 Второй шанс", callback_data: "redraw" }],
           [{ text: "🔮 Полный расклад", callback_data: "buy_full_reading" }],
         ],
       },
@@ -43,6 +45,7 @@ export async function sendDailyReading(ctx: Context, telegramId: string) {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [
+        [{ text: "🎲 Второй шанс", callback_data: "redraw" }],
         [{ text: "🔮 Полный расклад", callback_data: "buy_full_reading" }],
       ],
     },
@@ -98,4 +101,78 @@ bot.action("buy_full_reading", async (ctx) => {
 bot.action("purchase_reading", async (ctx) => {
   await ctx.answerCbQuery();
   await ctx.reply("⏳ Оплата через Telegram Stars — скоро!");
+});
+
+bot.action("redraw", async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.replyWithInvoice({
+    title: "Второй шанс",
+    description:
+      "Перерасклад — новая карта дня. Иногда судьба хочет сказать что-то другое.",
+    payload: "redraw",
+    provider_token: "",
+    currency: "XTR",
+    prices: [{ label: "Второй шанс", amount: 1 }],
+  });
+});
+
+bot.on("pre_checkout_query", async (ctx) => {
+  await ctx.answerPreCheckoutQuery(true);
+});
+
+bot.on(message("successful_payment"), async (ctx) => {
+  const payment = ctx.message.successful_payment;
+  if (payment.invoice_payload !== "redraw") return;
+
+  const telegramId = ctx.from.id.toString();
+  const [user] = await withRetry(
+    () =>
+      sql<UserType[]>`SELECT * FROM users WHERE telegram_id = ${telegramId}`,
+  );
+
+  if (!user) return;
+
+  const cardResult = getNarrativeForecast(user);
+  const redrawnText = [
+    cardResult.text,
+    "",
+    "_Карты иногда сами просят пересмотра — это не слабость, а чуткость к знакам._",
+  ].join("\n");
+
+  await ctx.reply(redrawnText, {
+    parse_mode: "Markdown",
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "🔮 Полный расклад", callback_data: "buy_full_reading" }],
+      ],
+    },
+  });
+
+  const timestamp = new Date().toISOString();
+  const cards = [{ id: cardResult.cardId, position: cardResult.position }];
+  const lastCardPull = {
+    date: timestamp,
+    type: "paid" as const,
+    cards,
+    summary: cardResult.summary,
+  };
+
+  await withRetry(
+    () => sql`
+    INSERT INTO readings (user_id, timestamp, type, theme, cards, summary, paid)
+    VALUES (${telegramId}, ${timestamp}, 'paid', 'redraw', ${sql.json(cards)}, ${cardResult.summary}, true)
+  `,
+  );
+
+  await withRetry(
+    () => sql`
+    UPDATE users SET
+      last_card_pull = ${sql.json(lastCardPull)},
+      total_paid_readings = ${(user.total_paid_readings || 0) + 1},
+      total_stars_spent = ${(user.total_stars_spent || 0) + 1},
+      total_purchases = ${(user.total_purchases || 0) + 1},
+      last_purchase_at = ${timestamp}
+    WHERE telegram_id = ${telegramId}
+  `,
+  );
 });
