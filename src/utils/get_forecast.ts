@@ -159,6 +159,22 @@ const UPSELL_CTAS: string[] = [
   "🔮 *Ты чувствуешь, что это не случайно?* Полный расклад ответит на вопрос, который ты несёшь в себе.",
 ];
 
+const SUM_INTROS: string[] = [
+  "Послание этого дня — простое и ясное:",
+  "Из всего этого карта выбирает одно:",
+  "Сегодня всё сводится к одной мысли:",
+  "В сухом остатке на сегодня:",
+  "Карта оставляет тебя с этим:",
+  "Главное, что карта несёт сегодня:",
+  "Если выделить суть этого расклада:",
+  "Одна мысль, которую карта хочет, чтобы ты взял с собой:",
+  "За всей этой глубиной — конкретное послание:",
+  "Сегодняшний день просит помнить одно:",
+  "Карта говорит напоследок:",
+  "И всё же, если отбросить лишнее:",
+  "Точка опоры на сегодня:",
+];
+
 const WARNING_FRAMES: string[] = [
   "⚠️ {warning} Но это лишь начало нити, а куда она ведет — пока скрыто в тени.",
   "⚠️ {warning} Твоё сердце уже чувствует подвох, но вся правда откроется чуть позже.",
@@ -301,12 +317,18 @@ export function getNarrativeForecast(user: UserType) {
 
   const lifePhaseHint =
     cardAdditional && user.life_phase
-      ? resolveGender(getRandomItem(cardAdditional.lifePhaseHints[user.life_phase]), user.gender)
+      ? resolveGender(
+          getRandomItem(cardAdditional.lifePhaseHints[user.life_phase]),
+          user.gender,
+        )
       : null;
 
   const focusHint =
     cardAdditional && user.focus_area
-      ? resolveGender(getRandomItem(cardAdditional.focusHints[user.focus_area]), user.gender)
+      ? resolveGender(
+          getRandomItem(cardAdditional.focusHints[user.focus_area]),
+          user.gender,
+        )
       : null;
 
   const atmosphere =
@@ -326,6 +348,7 @@ export function getNarrativeForecast(user: UserType) {
   const middleToAtmosphere = getRandomItem(MIDDLE_TO_ATMOSPHERE);
   const atmosphereToTrigger = getRandomItem(ATMOSPHERE_TO_TRIGGER);
   const triggerToFocus = getRandomItem(TRIGGER_TO_FOCUS);
+  const summaryIntro = getRandomItem(SUM_INTROS);
 
   const warningText = side.warning ?? null;
   const warningBlock = warningText
@@ -354,34 +377,41 @@ export function getNarrativeForecast(user: UserType) {
     .filter(Boolean)
     .join(" ");
 
-  const mainPara = contextParts ? `${teaserToContext}${contextParts}` : "";
+  const opening = [
+    `_${teaser}_`,
+    contextParts ? `${teaserToContext}${contextParts}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
-  const middleParts = [ageMeaning, genderHint, loveLine].filter(Boolean);
-  const middleLines =
-    middleParts.length > 0 ? `${contextToMiddle}${middleParts.join(" ")}` : "";
+  const depthParts = [ageMeaning, genderHint, loveLine].filter(Boolean);
+  const depth =
+    depthParts.length > 0
+      ? `${contextToMiddle}${depthParts.join(" ")} ${middleToAtmosphere}*${atmosphere}*`
+      : `${middleToAtmosphere}*${atmosphere}*`;
 
-  const atmosphereLine = `${middleToAtmosphere}*${atmosphere}*`;
+  const core = `${atmosphereToTrigger}\n\n_${trigger}_ — ${triggerConnector}`;
 
-  const triggerLine = `${atmosphereToTrigger}\n\n_${trigger}_ — ${triggerConnector}`;
+  const focus = focusHint ? `${triggerToFocus}${focusHint}` : null;
 
-  const focusLine = focusHint ? `${triggerToFocus}${focusHint}` : "";
+  const conclusion = affirmation
+    ? `${summaryIntro}\n\n_${affirmation}_`
+    : summaryIntro;
 
-  const story = `
-🃏 *${card.name}* — ${positionLabel}
+  const veil = `_${cliffhanger}_\n\n${upsellCta}`;
 
-_${teaser}_
-
-${mainPara}
-${middleLines ? `\n${middleLines}\n` : ""}
-${atmosphereLine}
-
-— — —
-${triggerLine}
-${affirmation ? `\n_${affirmation}_` : ""}
-${focusLine ? `\n${focusLine}\n` : ""}${warningBlock ? `\n${warningBlock}\n` : ""}
-${cliffhanger}
-${upsellCta} 
-`.trim();
+  const story = [
+    `🃏 *${card.name}* — ${positionLabel}`,
+    opening,
+    depth,
+    "✦",
+    core,
+    focus,
+    warningBlock,
+    "✦",
+    conclusion,
+    veil,
+  ].filter(Boolean).join("\n\n").trim();
 
   const summary = `${card.name} (${positionLabel}): ${side.meaning}`;
 

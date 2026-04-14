@@ -1,4 +1,5 @@
 import { sql } from "../db";
+import { withRetry } from "./db-retry";
 
 export async function getOrCreateUser(
   telegramUser: {
@@ -12,22 +13,22 @@ export async function getOrCreateUser(
   const telegramId = telegramUser.id.toString();
   const now = new Date().toISOString();
 
-  const [existingUser] = await sql`
+  const [existingUser] = await withRetry(() => sql`
     SELECT * FROM users WHERE telegram_id = ${telegramId}
-  `;
+  `);
 
   if (existingUser) {
-    const [updatedUser] = await sql`
+    const [updatedUser] = await withRetry(() => sql`
       UPDATE users SET
         last_seen = ${now},
         sessions_count = sessions_count + 1
       WHERE telegram_id = ${telegramId}
       RETURNING *
-    `;
+    `);
     return { user: updatedUser, isNew: false };
   }
 
-  const [insertedUser] = await sql`
+  const [insertedUser] = await withRetry(() => sql`
     INSERT INTO users (
       telegram_id, username, first_name, language,
       created_at, last_seen,
@@ -45,7 +46,7 @@ export async function getOrCreateUser(
       ${referralSource ?? null}
     )
     RETURNING *
-  `;
+  `);
 
   return { user: insertedUser, isNew: true };
 }

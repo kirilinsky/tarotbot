@@ -84,23 +84,38 @@ const ABOUT_TEXT =
   `*Данные:*\n` +
   `Мы храним только то, что ты указал(а) при настройке профиля, и историю твоих раскладов. Данные не передаются третьим лицам.\n\n` +
   `*Ограничение ответственности:*\n` +
-  `Бот носит исключительно развлекательный характер. Не является заменой профессиональной психологической, медицинской или финансовой консультации.\n\n` +
-  bot.action("about", async (ctx) => {
-    await ctx.answerCbQuery();
-    await ctx.editMessageText(ABOUT_TEXT, {
-      parse_mode: "Markdown",
-      reply_markup: Markup.inlineKeyboard([
-        [Markup.button.callback("‹ Назад", "settings")],
-      ]).reply_markup,
-    });
-  });
-
-bot.action("subscribe", async (ctx) => {
+  `Бот носит исключительно развлекательный характер. Не является заменой профессиональной психологической, медицинской или финансовой консультации.\n\n`;
+bot.action("about", async (ctx) => {
   await ctx.answerCbQuery();
-  await ctx.editMessageText(`💎 *Подписка*\n\n` + `⏳ Скоро...`, {
+  await ctx.editMessageText(ABOUT_TEXT, {
     parse_mode: "Markdown",
     reply_markup: Markup.inlineKeyboard([
       [Markup.button.callback("‹ Назад", "settings")],
+    ]).reply_markup,
+  });
+});
+
+const SUBSCRIBE_TEXT =
+  `💎 *Подписка*\n\n` +
+  `Неограниченный доступ к полным AI-раскладам.\n\n` +
+  `⏳ Скоро...`;
+
+bot.action("subscribe", async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.editMessageText(SUBSCRIBE_TEXT, {
+    parse_mode: "Markdown",
+    reply_markup: Markup.inlineKeyboard([
+      [Markup.button.callback("‹ Назад", "settings")],
+    ]).reply_markup,
+  });
+});
+
+bot.action("subscribe_from_reading", async (ctx) => {
+  await ctx.answerCbQuery();
+  await ctx.editMessageText(SUBSCRIBE_TEXT, {
+    parse_mode: "Markdown",
+    reply_markup: Markup.inlineKeyboard([
+      [Markup.button.callback("‹ Назад", "buy_full_reading")],
     ]).reply_markup,
   });
 });
