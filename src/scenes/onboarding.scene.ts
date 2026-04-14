@@ -206,6 +206,7 @@ export const onboardingWizard = new Scenes.WizardScene<BotContext>(
     const state = ctx.wizard.state as State;
     const telegramId = ctx.from!.id.toString();
 
+    const now = new Date().toISOString();
     await sql`
       UPDATE users SET
         gender = ${state.gender!},
@@ -213,7 +214,8 @@ export const onboardingWizard = new Scenes.WizardScene<BotContext>(
         focus_area = ${state.focus_area!},
         life_phase = ${state.life_phase!},
         relationship_status = ${state.relationship_status!},
-        zodiac_sign = ${ZODIAC_MAP[ctx.message.text]}
+        zodiac_sign = ${ZODIAC_MAP[ctx.message.text]},
+        onboarding_completed_at = ${now}
       WHERE telegram_id = ${telegramId}
     `;
 

@@ -35,7 +35,24 @@ export type UserType = {
     | "in_love"
     | "uncertain";
   zodiac_sign?: string;
+  is_premium: boolean;
+  premium_until?: string;
+  notifications_enabled: boolean;
+
   last_purchase_at?: string;
   total_free_readings: number;
   total_paid_readings: number;
+
+  total_stars_spent: number;
+  total_purchases: number;
+  first_purchase_at?: string;
+
+  subscription_status: "none" | "active" | "expired" | "cancelled";
+  subscription_started_at?: string;
+  subscription_expires_at?: string;
+
+  sessions_count: number;
+  onboarding_completed_at?: string;
+
+  referral_source?: string;
 };
