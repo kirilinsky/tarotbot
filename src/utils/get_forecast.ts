@@ -21,6 +21,47 @@ const POSITION_LABELS: Record<CardPosition, string[]> = {
   ],
 };
 
+const TEASER_TO_CONTEXT: string[] = [
+  "И это неспроста — ",
+  "Как мне кажется, это не просто так.",
+  "За этим стоит кое-что личное. ",
+  "Это созвучно тому, что сейчас происходит с тобой. ",
+  "Именно здесь карта встречает тебя: ",
+  "В этом — ключ. ",
+];
+
+const CONTEXT_TO_MIDDLE: string[] = [
+  "Если смотреть глубже — ",
+  "А ещё карта замечает: ",
+  "И здесь есть кое-что ещё: ",
+  "В этом контексте важна ещё одна деталь. ",
+  "Карта видит и другое — ",
+  "Хм, если приглядеться, здесь есть еще кое-что: ",
+];
+
+const MIDDLE_TO_ATMOSPHERE: string[] = [
+  "Всё это собирается в одно ощущение: ",
+  "Именно поэтому тон сегодня такой: ",
+  "В этом — весь характер момента: ",
+  "Из этого складывается атмосфера: ",
+];
+
+const ATMOSPHERE_TO_TRIGGER: string[] = [
+  "За этим ощущением — кое-что глубже.",
+  "И в основе этого лежит нечто важное.",
+  "Здесь карта касается самого существенного.",
+  "Это не случайно — за этим стоит:",
+  "Именно отсюда карта говорит с тобой.",
+];
+
+const TRIGGER_TO_FOCUS: string[] = [
+  "А в том, что важно тебе прямо сейчас — ",
+  "Применительно к твоей ситуации: ",
+  "И конкретно для тебя сейчас: ",
+  "А ведь для тебя это важно: ",
+  "Если смотреть на то, что тебя занимает — ",
+];
+
 const TRIGGER_CONNECTORS: string[] = [
   "именно это стоит за этой картой сейчас.",
   "карта видит это в тебе прямо сейчас.",
@@ -146,6 +187,12 @@ export function getNarrativeForecast(user: UserType) {
     FOCUS_CLIFFHANGER[user.focus_area ?? "other"],
   );
 
+  const teaserToContext = getRandomItem(TEASER_TO_CONTEXT);
+  const contextToMiddle = getRandomItem(CONTEXT_TO_MIDDLE);
+  const middleToAtmosphere = getRandomItem(MIDDLE_TO_ATMOSPHERE);
+  const atmosphereToTrigger = getRandomItem(ATMOSPHERE_TO_TRIGGER);
+  const triggerToFocus = getRandomItem(TRIGGER_TO_FOCUS);
+
   const warningText = side.warning ?? null;
   const warningBlock = warningText
     ? getRandomItem(WARNING_FRAMES)
@@ -169,13 +216,21 @@ export function getNarrativeForecast(user: UserType) {
         lifePhaseRaw.slice(1)
       : lifePhaseRaw || namePrefix.replace(/[,\s—:]+$/, ".");
 
-  const mainPara = [lifePhaseWithName, zodiacHint ?? ""]
+  const contextParts = [lifePhaseWithName, zodiacHint ?? ""]
     .filter(Boolean)
     .join(" ");
 
-  const middleLines = [ageMeaning, genderHint, loveLine]
-    .filter(Boolean)
-    .join("\n\n");
+  const mainPara = contextParts ? `${teaserToContext}${contextParts}` : "";
+
+  const middleParts = [ageMeaning, genderHint, loveLine].filter(Boolean);
+  const middleLines =
+    middleParts.length > 0 ? `${contextToMiddle}${middleParts.join(" ")}` : "";
+
+  const atmosphereLine = `${middleToAtmosphere}*${atmosphere}*`;
+
+  const triggerLine = `${atmosphereToTrigger}\n\n_${trigger}_ — ${triggerConnector}`;
+
+  const focusLine = focusHint ? `${triggerToFocus}${focusHint}` : "";
 
   const story = `
 🃏 *${card.name}* — ${positionLabel}
@@ -184,11 +239,11 @@ _${teaser}_
 
 ${mainPara}
 ${middleLines ? `\n${middleLines}\n` : ""}
-*${atmosphere}*
+${atmosphereLine}
 
 — — —
-_${trigger}_ — ${triggerConnector}
-${focusHint ? `\n${focusHint}\n` : ""}${warningBlock ? `\n${warningBlock}\n` : ""}
+${triggerLine}
+${focusLine ? `\n${focusLine}\n` : ""}${warningBlock ? `\n${warningBlock}\n` : ""}
 ${cliffhanger}
 ${upsellCta}
 ${affirmation ? `\n_${affirmation}_` : ""}
