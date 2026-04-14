@@ -376,10 +376,10 @@ ${atmosphereLine}
 
 — — —
 ${triggerLine}
+${affirmation ? `\n_${affirmation}_` : ""}
 ${focusLine ? `\n${focusLine}\n` : ""}${warningBlock ? `\n${warningBlock}\n` : ""}
 ${cliffhanger}
-${upsellCta}
-${affirmation ? `\n_${affirmation}_` : ""}
+${upsellCta} 
 `.trim();
 
   const summary = `${card.name} (${positionLabel}): ${side.meaning}`;
