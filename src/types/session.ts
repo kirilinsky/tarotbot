@@ -8,6 +8,10 @@ export interface OnboardingSession extends Scenes.WizardSessionData {
   relationship_status?: string;
 }
 
+export interface ProfileEditSession extends Scenes.WizardSessionData {
+  field?: string;
+}
+
 export interface BotContext extends Context {
   session: Scenes.WizardSession<OnboardingSession>;
   scene: Scenes.SceneContextScene<BotContext, OnboardingSession>;

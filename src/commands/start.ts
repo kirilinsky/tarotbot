@@ -27,6 +27,7 @@ bot.start(async (ctx) => {
       Markup.inlineKeyboard([
         [Markup.button.callback("🃏 Карта дня", "daily")],
         [Markup.button.callback("✨ Полный расклад", "buy_full_reading")],
+        [Markup.button.callback("⚙️ Настройки", "settings")],
       ])
     );
   }

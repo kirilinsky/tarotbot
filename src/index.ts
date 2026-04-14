@@ -1,6 +1,7 @@
 import { bot } from "./bot";
 import "./commands/start";
 import "./commands/daily";
+import "./commands/profile";
 
 console.log("✅ BOT_TOKEN loaded, starting bot...");
 bot.launch();

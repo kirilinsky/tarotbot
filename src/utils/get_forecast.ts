@@ -5,6 +5,7 @@ import { getTimeOfDay } from "./get_daytime";
 import { getRandomItem } from "./get_random_item";
 import { getSeasonFromDate } from "./get_season";
 import { UserType } from "../types/user";
+import { resolveGender } from "./gender";
 
 const POSITION_LABELS: Record<CardPosition, string[]> = {
   upright: [
@@ -300,12 +301,12 @@ export function getNarrativeForecast(user: UserType) {
 
   const lifePhaseHint =
     cardAdditional && user.life_phase
-      ? getRandomItem(cardAdditional.lifePhaseHints[user.life_phase])
+      ? resolveGender(getRandomItem(cardAdditional.lifePhaseHints[user.life_phase]), user.gender)
       : null;
 
   const focusHint =
     cardAdditional && user.focus_area
-      ? getRandomItem(cardAdditional.focusHints[user.focus_area])
+      ? resolveGender(getRandomItem(cardAdditional.focusHints[user.focus_area]), user.gender)
       : null;
 
   const atmosphere =

@@ -20,8 +20,9 @@ export async function sendDailyReading(ctx: Context, telegramId: string) {
   const alreadyToday = lastDate && isSameDay(new Date(lastDate), new Date());
 
   if (alreadyToday) {
+    const got = user.gender === "female" ? "получала" : "получал";
     return ctx.reply(
-      "Ты уже получал(а) карту сегодня 🌞 Попробуй снова завтра!",
+      `Ты уже ${got} карту сегодня 🌞 Попробуй снова завтра!`,
       {
         reply_markup: {
           inline_keyboard: [[
